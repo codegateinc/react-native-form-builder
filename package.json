@@ -1,0 +1,29 @@
+{
+  "name": "react-native-form-builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rm -rf ./dist && yarn tsc",
+    "tsc": "node_modules/typescript/bin/tsc",
+    "tsc:watch": "node_modules/typescript/bin/tsc --watch"
+  },
+  "typings": "index.d.ts",
+  "keywords": [
+    "react-native"
+  ],
+  "author": "CodeGate",
+  "license": "MIT",
+  "peerDependencies":  {
+    "react": "^16.8.6",
+    "react-native": "^0.57.8"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.19",
+    "@types/react-native": "^0.57.23",
+    "typescript": "3.5.1",
+    "tslint": "5.12.1",
+    "tslint-react": "3.6.0",
+    "metro-react-native-babel-preset": "^0.54.1"
+  }
+}
