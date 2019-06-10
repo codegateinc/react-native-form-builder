@@ -1,9 +1,6 @@
 import React from 'react'
 import { Text } from 'react-native'
-
-type SampleComponentProps = {
-    text: string
-}
+import { SampleComponentProps } from './types'
 
 export const SampleComponent: React.FunctionComponent<SampleComponentProps> = ({ text }) => (
     <Text>

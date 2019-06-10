@@ -1,7 +1,4 @@
 import React from 'react'
-
-type SampleComponentProps = {
-    text: string
-}
+import { SampleComponentProps } from './src'
 
 export const SampleComponent: React.FunctionComponent<SampleComponentProps> = () => {}
