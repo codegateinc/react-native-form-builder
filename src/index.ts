@@ -1,1 +1,1 @@
-export const firstCommit = () => {}
+export { SampleComponent } from './SampleComponent'
