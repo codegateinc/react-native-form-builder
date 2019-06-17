@@ -17,8 +17,8 @@ const renderErrorText = (withError?: string, errorMessageStyles?: TextStyle)  =>
 
 export const Input: React.FunctionComponent<InputProps> = props => {
     const { inputProps, withError, errorMessageStyles } = props
-    const withErrorStyles = withError && !Boolean(inputProps!.secureTextEntry)
-    const { style, ...otherInputProps } = inputProps as TextInputProps
+    const { style, secureTextEntry, ...otherInputProps } = inputProps as TextInputProps
+    const withErrorStyles = withError && !Boolean(secureTextEntry)
 
     return (
         <View style={styles.container}>
@@ -30,6 +30,7 @@ export const Input: React.FunctionComponent<InputProps> = props => {
                         ...(style as ViewStyle)
                     }}
                     clearButtonMode="always"
+                    secureTextEntry={secureTextEntry}
                     {...otherInputProps}
                 />
             </View>
