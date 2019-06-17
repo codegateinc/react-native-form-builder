@@ -8,6 +8,8 @@ module.exports = {
             "extensions": [".ts", ".tsx"]
         }],
         "@babel/plugin-transform-runtime",
+        "@babel/proposal-class-properties",
+        "@babel/proposal-object-rest-spread"
     ],
     "env": {
         "production": {
