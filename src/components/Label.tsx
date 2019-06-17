@@ -23,6 +23,7 @@ const styles: Styles = {
     label: {
         fontSize: 14,
         fontWeight: '600',
+        textAlign: 'left',
         color: colors.midnightBlue,
         paddingHorizontal: 2,
         marginBottom: 5
