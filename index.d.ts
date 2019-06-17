@@ -1,6 +1,7 @@
-import { Input, Label } from './src'
+import { Input, Label, Types } from './src'
 
 export {
     Input,
-    Label
+    Label,
+    Types
 }
