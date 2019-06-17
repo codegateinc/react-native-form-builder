@@ -1,6 +1,1 @@
-export var FormField;
-(function (FormField) {
-    FormField[FormField["Input"] = 0] = "Input";
-    FormField[FormField["Checkbox"] = 1] = "Checkbox";
-    FormField[FormField["SelectPicker"] = 2] = "SelectPicker";
-})(FormField || (FormField = {}));
+Object.defineProperty(exports,"__esModule",{value:true});exports.FormField=void 0;var FormField;exports.FormField=FormField;(function(FormField){FormField[FormField["Input"]=0]="Input";FormField[FormField["Checkbox"]=1]="Checkbox";FormField[FormField["SelectPicker"]=2]="SelectPicker";})(FormField||(exports.FormField=FormField={}));
