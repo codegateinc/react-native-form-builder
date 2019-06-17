@@ -1,12 +1,8 @@
 import React from 'react'
-import { Text, TextStyle } from 'react-native'
+import { Text } from 'react-native'
 import { Styles } from 'lib/types'
 import { colors } from 'lib/common'
-
-type LabelProps = {
-    text: string,
-    customTextStyles?: TextStyle
-}
+import { LabelProps } from '../types'
 
 export const Label: React.FunctionComponent<LabelProps> = ({ text, customTextStyles }) => (
     <Text
