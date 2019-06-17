@@ -12,11 +12,7 @@
     "rootDir": ".",
     "skipLibCheck": true,
     "noImplicitAny": false,
-    "outDir": "./dist",
-    "baseUrl": "src",
-    "paths": {
-      "lib/*": ["./lib/*"]
-    }
+    "baseUrl": "src"
   },
   "exclude": ["node_modules"]
 }
