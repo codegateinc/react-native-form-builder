@@ -67,8 +67,7 @@ export const validateFormFields = (form: FormState) => {
             }
         }, {
             checkboxes: [],
-            selectPickers: [],
-            horizontalPickers: []
+            selectPickers: []
         })
 
     const areCheckboxesValid = fieldsToCheck.checkboxes
@@ -78,13 +77,8 @@ export const validateFormFields = (form: FormState) => {
         .map(({ value }) => R.isDefined(value))
         .every(Boolean)
 
-    const areHorizontalPickersValid = fieldsToCheck.horizontalPickers
-        .map(({ value }) => R.isDefined(value))
-        .every(Boolean)
-
     return R.all(
         areCheckboxesValid,
-        areSelectPikersValid,
-        areHorizontalPickersValid
+        areSelectPikersValid
     )
 }
