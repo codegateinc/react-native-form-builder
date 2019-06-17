@@ -1,0 +1,1 @@
+Object.defineProperty(exports,"__esModule",{value:true});exports.ModalAnimation=void 0;var ModalAnimation;exports.ModalAnimation=ModalAnimation;(function(ModalAnimation){ModalAnimation["Fade"]="fade";ModalAnimation["Slide"]="slide";ModalAnimation["None"]="none";})(ModalAnimation||(exports.ModalAnimation=ModalAnimation={}));

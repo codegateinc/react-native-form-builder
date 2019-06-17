@@ -1,2 +1,9 @@
+import { Label, Input } from './components'
+import * as Types from './types'
+
 export * from './types'
-export { SampleComponent } from './SampleComponent'
+export {
+    Label,
+    Input,
+    Types
+}

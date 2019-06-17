@@ -6,13 +6,13 @@
     "jsx": "react-native",
     "lib": ["es6"],
     "moduleResolution": "node",
-    "noEmit": false,
+    "noEmit": true,
     "strict": true,
     "target": "esnext",
-    "baseUrl": "src",
+    "rootDir": ".",
     "skipLibCheck": true,
     "noImplicitAny": false,
-    "outDir": "./dist"
+    "baseUrl": "src"
   },
   "exclude": ["node_modules"]
 }
