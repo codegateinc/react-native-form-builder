@@ -1,5 +1,5 @@
-import { OptionValue } from './form'
 import { ViewStyle } from 'react-native'
+import { OptionValue } from './form'
 
 export type PickerOption = {
     value: OptionValue,
