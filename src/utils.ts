@@ -15,7 +15,7 @@ export const prepareFormInitialState = (formConfig: FormConfig) => {
                 }]
             }
 
-            // Checkbox, SelectPicker and HorizontalOptionPicker has same initial state props
+            // Checkbox and SelectPicker has same initial state props
             const validatedValue = R.cond([
                 [
                     ({ fieldType }) => fieldType === FormField.Checkbox,
