@@ -3,7 +3,7 @@ import { Keyboard, ScrollView, View } from 'react-native'
 import { R } from 'lib/utils'
 import { Styles } from 'lib/types'
 import { prepareFormInitialState } from '../utils'
-import { FormField, FormInputConfigProps, FormInputState, FormBuilderState, FormBuilderProps, InputProps, FieldState } from '../types'
+import { FormField, FormInputConfigProps, FormInputState, FormBuilderState, FormBuilderProps, InputProps, FieldState, InputCompareWith } from '../types'
 import { Input } from './Input'
 
 type FormProps<T> = FormBuilderProps<T>
@@ -40,6 +40,23 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
         )
     }
 
+    get hasValidCompares() {
+        const inputsToCompare = R.toPairs(this.state.form)
+            .filter(([ fieldName, fieldObject ]) =>
+                fieldObject.fieldType === FormField.Input && Boolean(this.props.formConfig[fieldName].compareWith)
+            )
+
+        return inputsToCompare.length
+            ? inputsToCompare
+                .map(([ fieldName, fieldObject ]) => {
+                    const fieldToCompare = (this.props.formConfig[fieldName].compareWith as InputCompareWith).fieldName
+
+                    return fieldObject.value === this.state.form[fieldToCompare].value
+                })
+                .every(Boolean)
+            : true
+    }
+
     setCustomFieldError(fieldName: string, errorMessage: string) {
         this.setState({
             form: {
@@ -59,9 +76,24 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
             .filter(([, fieldObject]) => fieldObject.isRequired)
             .map(([fieldName, fieldObject]) => {
                 const isValid = this.validateField(fieldName, fieldObject.value as string)
-                const hasError = !isValid
-                    ? this.getFieldErrorMessage(fieldName, fieldObject.value as string)
-                    : undefined
+                const { compareWith } = this.props.formConfig[fieldName]
+
+                const hasError = R.cond([
+                    [
+                        () => !isValid,
+                        () => this.getFieldErrorMessage(fieldName, fieldObject.value as string)
+                    ],
+                    [
+                        () => Boolean(compareWith),
+                        () => fieldObject.value !== this.state.form[compareWith!.fieldName].value
+                            ? compareWith!.errorMessage
+                            : undefined
+                    ],
+                    [
+                        R.T,
+                        R.always(undefined)
+                    ]
+                ])()
 
                 return [fieldName, {
                     ...fieldObject,
@@ -85,7 +117,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
     submitForm() {
         Keyboard.dismiss()
 
-        if (!this.isFormValid) {
+        if (!this.isFormValid || !this.hasValidCompares) {
             return this.showErrorsOnSubmit()
         }
 

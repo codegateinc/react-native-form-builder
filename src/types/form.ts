@@ -14,10 +14,16 @@ type FormFieldBase = {
     fieldType: FormField
 }
 
+export type InputCompareWith = {
+    fieldName: string,
+    errorMessage: string
+}
+
 export interface FormInputConfigProps extends FormFieldBase {
     value: string,
     inputProps?: TextInputProps,
     validationRules?: Array<FormFieldValidationRule>,
+    compareWith?: InputCompareWith,
     liveParser?(value: string): string,
     submitParser?(value: string): string
 }
