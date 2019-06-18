@@ -1,12 +1,7 @@
-import { TextInputProps } from 'react-native'
-import { PickerOption } from './selectPicker'
-
-export type OptionValue = number | string
+import { TextInputProps, ViewStyle } from 'react-native'
 
 export enum FormField {
-    Input = 0,
-    Checkbox = 1,
-    SelectPicker = 2
+    Input = 0
 }
 
 export type FormFieldValidationRule = {
@@ -19,30 +14,22 @@ type FormFieldBase = {
     fieldType: FormField
 }
 
+export type InputCompareWith = {
+    fieldName: string,
+    errorMessage: string
+}
+
 export interface FormInputConfigProps extends FormFieldBase {
-    label?: string,
     value: string,
     inputProps?: TextInputProps,
     validationRules?: Array<FormFieldValidationRule>,
+    compareWith?: InputCompareWith,
     liveParser?(value: string): string,
     submitParser?(value: string): string
 }
 
-export interface FormCheckboxConfigProps extends FormFieldBase {
-    value: boolean,
-    errorMessage?: string
-}
-
-export interface FormSelectPickerConfigProps extends FormFieldBase {
-    label?: string,
-    value?: OptionValue,
-    pickerTitle?: string
-    errorMessage?: string,
-    placeholder?: string,
-    options: Array<PickerOption>
-}
-
-export type FieldConfig = FormInputConfigProps | FormCheckboxConfigProps | FormSelectPickerConfigProps
+// todo later there will be more types assigned to FieldConfig
+export type FieldConfig = FormInputConfigProps
 
 export type FormConfig = {
     [key: string]: FieldConfig
@@ -54,18 +41,17 @@ export interface FormInputState extends FormFieldBase {
     value: string,
 }
 
-export interface FormCheckboxState extends FormFieldBase {
-    value: boolean,
-    hasError?: string
-}
+// todo later there will be more types assigned to FieldState
+export type FieldState = FormInputState
 
-export interface FormSelectPickerState extends FormFieldBase {
-    value?: OptionValue,
-    hasError?: string
-}
-
-export type FieldState = FormInputState | FormCheckboxState | FormSelectPickerState
-
-export type FormState = {
+export type FormBuilderState = {
     [key: string]: FieldState
+}
+
+export type FormBuilderProps<T> = {
+    isScrollable?: boolean,
+    isLoading?: boolean,
+    customFormContainerStyles?: ViewStyle,
+    formConfig: FormConfig,
+    onFormSubmit(form: T): void
 }
