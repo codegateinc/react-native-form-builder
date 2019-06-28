@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { Keyboard, ScrollView, View } from 'react-native'
+import { Keyboard, ScrollView, StyleSheet, View } from 'react-native'
 import { R } from 'lib/utils'
 import { Styles } from 'lib/types'
 import { prepareFormInitialState } from '../utils'
@@ -240,6 +240,9 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
         if (reactElementChild.type === Input) {
             const fieldName = reactElementChild.props.formFieldName
             const configProps = this.props.formConfig[fieldName] as FormInputConfigProps
+            const { inputProps } = (reactElementChild as React.ReactElement<InputProps>).props
+            const customInputStyles = inputProps && inputProps.style ? inputProps.style : {}
+            const formConfigStyles = configProps.inputProps && configProps.inputProps.style ? configProps.inputProps.style : {}
 
             return React.cloneElement<InputProps>(reactElementChild, {
                 ...reactElementChild.props,
@@ -247,6 +250,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                 inputProps: {
                     editable: !Boolean(this.props.isLoading),
                     ...configProps.inputProps,
+                    style: StyleSheet.flatten([formConfigStyles, customInputStyles]),
                     value: this.state.form[fieldName].value,
                     onChangeText: value => this.onTextChange(value, fieldName),
                     onBlur: () => this.onInputBlur(fieldName)
