@@ -1,7 +1,12 @@
 import { TextInputProps, ViewStyle } from 'react-native'
 
-export enum FormField {
-    Input = 0
+type FormFieldBase = {
+    isRequired: boolean,
+    fieldType: FormField
+}
+
+export type FormErrors = {
+    [key: string]: string | number
 }
 
 export type FormFieldValidationRule = {
@@ -9,9 +14,8 @@ export type FormFieldValidationRule = {
     validationFunction(text: string): boolean,
 }
 
-type FormFieldBase = {
-    isRequired: boolean,
-    fieldType: FormField
+export enum FormField {
+    Input = 0
 }
 
 export type InputCompareWith = {
@@ -53,5 +57,6 @@ export type FormBuilderProps<T> = {
     isLoading?: boolean,
     customFormContainerStyles?: ViewStyle,
     formConfig: FormConfig,
-    onFormSubmit(form: T): void
+    onFormSubmit(form: T): void,
+    onFormError?(errors: FormErrors): void
 }

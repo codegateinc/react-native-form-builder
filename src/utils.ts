@@ -1,5 +1,5 @@
 import { R } from 'lib/utils'
-import { FormConfig, FieldState } from './types'
+import { FormConfig, FieldState, FormBuilderState } from './types'
 
 export const prepareFormInitialState = (formConfig: FormConfig) => {
     const preparedPairs = R.toPairs(formConfig)
@@ -16,3 +16,10 @@ export const prepareFormInitialState = (formConfig: FormConfig) => {
 
     return R.fromPairs(preparedPairs)
 }
+
+export const getFormErrors = (formState: FormBuilderState) => R.toPairs(formState)
+    .filter(([, fieldState]) => Boolean(fieldState.hasError))
+    .reduce((acc, [fieldName, fieldState]) => ({
+        ...acc,
+        [fieldName]: fieldState.hasError
+    }), {})

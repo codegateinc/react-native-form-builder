@@ -13,6 +13,10 @@ type LabelProps = {
     customTextStyles?: TextStyle
 }
 
+export type FormErrors = {
+    [key: string]: string | number
+}
+
 export type FormFieldValidationRule = {
     errorMessage: string
     validationFunction(text: string): boolean,
@@ -62,7 +66,8 @@ type FormBuilderProps<T> = {
     isLoading?: boolean,
     customFormContainerStyles?: ViewStyle,
     formConfig: FormConfig,
-    onFormSubmit(form: T): void
+    onFormSubmit(form: T): void,
+    onFormError?(errors: FormErrors): void
 }
 
 export enum FormField {
