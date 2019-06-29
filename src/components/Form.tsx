@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import { Keyboard, ScrollView, StyleSheet, View } from 'react-native'
 import { R } from 'lib/utils'
 import { Styles } from 'lib/types'
-import { prepareFormInitialState } from '../utils'
+import { prepareFormInitialState, getFormErrors } from '../utils'
 import { FormField, FormInputConfigProps, FormInputState, FormBuilderState, FormBuilderProps, InputProps, FieldState, InputCompareWith } from '../types'
 import { Input } from './Input'
 
@@ -26,6 +26,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
 
         this.submitForm = this.submitForm.bind(this)
         this.renderChild = this.renderChild.bind(this)
+        this.handleFormError = this.handleFormError.bind(this)
     }
 
     get isFormValid() {
@@ -55,6 +56,14 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                 })
                 .every(Boolean)
             : true
+    }
+
+    handleFormError() {
+        if (this.props.onFormError) {
+            const errors = getFormErrors(this.state.form)
+
+            this.props.onFormError(errors)
+        }
     }
 
     setCustomFieldError(fieldName: string, errorMessage: string) {
@@ -111,7 +120,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                 ...this.state.form,
                 ...checkedFormFields
             }
-        })
+        }, this.handleFormError)
     }
 
     submitForm() {
