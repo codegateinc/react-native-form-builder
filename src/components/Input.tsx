@@ -3,17 +3,14 @@ import { View, TextInput, Text, TextInputProps, ViewStyle, TextStyle } from 'rea
 import { Styles } from 'lib/types'
 import { colors } from 'lib/common'
 import { InputProps } from '../types'
+import { ErrorMessage } from './ErrorMessage'
 
-const renderErrorText = (withError?: string, errorMessageStyles?: TextStyle)  => withError ? (
-    <Text
-        style={{
-            ...styles.errorMessage,
-            ...errorMessageStyles
-        }}
-    >
-        {withError}
-    </Text>
-) : null
+const renderErrorText = (withError?: string, errorMessageStyles?: TextStyle)  => (
+    <ErrorMessage
+        text={withError}
+        style={errorMessageStyles}
+    />
+)
 
 export const Input: React.FunctionComponent<InputProps> = props => {
     const { inputProps, withError, errorMessageStyles } = props
@@ -65,11 +62,5 @@ const styles: Styles = {
     },
     errorInput: {
         color: colors.red
-    },
-    errorMessage: {
-        paddingHorizontal: 2,
-        color: colors.red,
-        fontSize: 11,
-        paddingTop: 5,
     }
 }

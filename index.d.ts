@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { TextInputProps, TextStyle, ViewStyle } from 'react-native'
+import { onOptionPress } from './src/types';
 
 type InputProps = {
     formFieldName?: string,
@@ -74,9 +75,37 @@ export enum FormField {
     Input = 0
 }
 
+// tslint:disable max-classes-per-file
+
 export const Input: React.FunctionComponent<InputProps> = () => {}
 export const Label: React.FunctionComponent<LabelProps> = () => {}
 export class Form<T = {}> extends React.Component<FormBuilderProps<T>, FormBuilderState> {
     submitForm(): T
     setCustomFieldError(fieldName: string, errorMessage: string): void
 }
+
+// Custom Placeholder
+
+export type CustomPickerOption = {
+    value: string | number,
+    label: string,
+    isSelected?: boolean
+}
+
+export type RenderPlaceholderComponent = (selectedOptions: Array<CustomPickerOption>, isPickerVisible: boolean) => ReactNode
+
+export type CustomPickerState = {
+    isPickerVisible: boolean,
+}
+
+export type CustomPickerProps = {
+    withError?: string,
+    customErrorStyle?: TextStyle,
+    onOptionChange?: onOptionPress,
+    isPickerAlwaysVisible?: boolean,
+    options?: Array<CustomPickerOption>,
+    renderPlaceholderComponent?: RenderPlaceholderComponent,
+    renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: onOptionPress): ReactNode,
+}
+
+export class CustomPicker extends React.Component<CustomPickerProps, CustomPickerState> {}
