@@ -79,7 +79,7 @@ export type CustomPickerOption = {
     isSelected?: boolean
 }
 
-export type RenderPlaceholderComponent = (selectedOptions: Array<CustomPickerOption>, isPickerVisible: boolean) => ReactNode
+type RenderPlaceholderComponent = (selectedOptions: Array<CustomPickerOption>, isPickerVisible: boolean) => ReactNode
 
 type CustomPickerState = {
     isPickerVisible: boolean,
@@ -87,7 +87,7 @@ type CustomPickerState = {
 
 export type OnCustomPickerOptionPress = (option: CustomPickerOption) => void
 
-export type CustomPickerProps = {
+type CustomPickerProps = {
     withError?: string,
     customErrorStyle?: TextStyle,
     onOptionChange?: OnCustomPickerOptionPress,
