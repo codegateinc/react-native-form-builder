@@ -1,4 +1,5 @@
 import { TextInputProps, ViewStyle } from 'react-native'
+import { CustomPickerOption, CustomPickerMode, CustomPickerValidationRule } from '../types'
 
 type FormFieldBase = {
     isRequired: boolean,
@@ -33,8 +34,13 @@ export interface FormInputConfigProps extends FormFieldBase {
     submitParser?(value: string): string
 }
 
-// todo later there will be more types assigned to FieldConfig
-export type FieldConfig = FormInputConfigProps
+export interface FormCustomPickerConfigProps extends FormFieldBase {
+    options: Array<CustomPickerOption>,
+    pickerMode: CustomPickerMode,
+    validationRules?: Array<CustomPickerValidationRule>
+}
+
+export type FieldConfig = FormInputConfigProps | FormCustomPickerConfigProps
 
 export type FormConfig = {
     [key: string]: FieldConfig
@@ -46,8 +52,13 @@ export interface FormInputState extends FormFieldBase {
     value: string,
 }
 
+export interface FormCustomPickerState extends FormFieldBase {
+    options: Array<CustomPickerOption>,
+    hasError?: string
+}
+
 // todo later there will be more types assigned to FieldState
-export type FieldState = FormInputState
+export type FieldState = FormInputState | FormCustomPickerState
 
 export type FormBuilderState = {
     [key: string]: FieldState

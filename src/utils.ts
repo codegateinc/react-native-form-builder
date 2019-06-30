@@ -1,16 +1,35 @@
 import { R } from 'lib/utils'
-import { FormConfig, FieldState, FormBuilderState } from './types'
+import {
+    FieldState,
+    FormBuilderState,
+    FormConfig,
+    FormCustomPickerConfigProps,
+    FormField,
+    FormInputConfigProps
+} from './types'
 
 export const prepareFormInitialState = (formConfig: FormConfig) => {
     const preparedPairs = R.toPairs(formConfig)
         .map(([ fieldName, config ]) => {
-            const isValidInputValue = R.is(String, config.value) || R.is(Number, config.value)
+            if (config.fieldType === FormField.Input) {
+                const inputConfig = config as FormInputConfigProps
+                const isValidInputValue = R.is(String, inputConfig.value) || R.is(Number, inputConfig.value)
+
+                return [fieldName, {
+                    isValid: Boolean(inputConfig.value),
+                    isRequired: config.isRequired,
+                    value: isValidInputValue ? inputConfig.value : '',
+                    fieldType: config.fieldType
+                }]
+            }
+
+            // CustomPicker
+            const customPickerConfig = config as FormCustomPickerConfigProps
 
             return [fieldName, {
-                isValid: Boolean(config.value),
-                isRequired: config.isRequired,
-                value: isValidInputValue ? config.value : '',
-                fieldType: config.fieldType
+                fieldType: customPickerConfig.fieldType,
+                isRequired: customPickerConfig.isRequired,
+                options: customPickerConfig.options
             }]
         }) as Array<[string, FieldState]>
 

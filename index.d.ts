@@ -41,7 +41,23 @@ interface FormInputConfigProps extends FormFieldBase {
     submitParser?(value: string): string
 }
 
-type FieldConfig = FormInputConfigProps
+export enum CustomPickerMode {
+    Single = 0,
+    Multi = 1,
+}
+
+export type CustomPickerValidationRule = {
+    errorMessage: string
+    validationFunction(selectedOptions: Array<CustomPickerOption>): boolean,
+}
+
+export interface FormCustomPickerConfigProps extends FormFieldBase {
+    options: Array<CustomPickerOption>,
+    pickerMode: CustomPickerMode,
+    validationRules?: Array<CustomPickerValidationRule>
+}
+
+type FieldConfig = FormInputConfigProps | FormCustomPickerConfigProps
 
 export type FormConfig = {
     [key: string]: FieldConfig
@@ -53,7 +69,12 @@ interface FormInputState extends FormFieldBase {
     value: string,
 }
 
-type FieldState = FormInputState
+interface FormCustomPickerState extends FormFieldBase {
+    options: Array<CustomPickerOption>,
+    hasError?: string
+}
+
+type FieldState = FormInputState | FormCustomPickerState
 
 type FormBuilderState = {
     [key: string]: FieldState
@@ -90,6 +111,7 @@ export type OnCustomPickerOptionPress = (option: CustomPickerOption) => void
 type CustomPickerProps = {
     withError?: string,
     customErrorStyle?: TextStyle,
+    formFieldName?: string,
     onOptionChange?: OnCustomPickerOptionPress,
     isPickerAlwaysVisible?: boolean,
     options?: Array<CustomPickerOption>,

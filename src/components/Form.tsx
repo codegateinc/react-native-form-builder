@@ -2,9 +2,24 @@ import React, { Fragment } from 'react'
 import { Keyboard, ScrollView, StyleSheet, View } from 'react-native'
 import { R } from 'lib/utils'
 import { Styles } from 'lib/types'
-import { prepareFormInitialState, getFormErrors } from '../utils'
-import { FormField, FormInputConfigProps, FormInputState, FormBuilderState, FormBuilderProps, InputProps, FieldState, InputCompareWith } from '../types'
+import { getFormErrors, prepareFormInitialState } from '../utils'
+import {
+    CustomPickerMode,
+    CustomPickerOption,
+    CustomPickerProps,
+    FieldState,
+    FormBuilderProps,
+    FormBuilderState,
+    FormCustomPickerConfigProps,
+    FormCustomPickerState,
+    FormField,
+    FormInputConfigProps,
+    FormInputState,
+    InputCompareWith,
+    InputProps
+} from '../types'
 import { Input } from './Input'
+import { CustomPicker } from './CustomPicker'
 
 type FormProps<T> = FormBuilderProps<T>
 
@@ -35,8 +50,14 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
             .map(([fieldName, fieldObject]) => this.validateField(fieldName, (fieldObject as FormInputState).value))
             .every(Boolean)
 
+        const areCustomPickersValid = R.toPairs(this.state.form)
+            .filter(([, fieldObject]) => fieldObject.fieldType === FormField.CustomPicker)
+            .map(([fieldName]) => this.validateCustomPicker(fieldName))
+            .every(Boolean)
+
         return R.all(
             areInputsValid,
+            areCustomPickersValid,
             !this.props.isLoading
         )
     }
@@ -44,15 +65,15 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
     get hasValidCompares() {
         const inputsToCompare = R.toPairs(this.state.form)
             .filter(([ fieldName, fieldObject ]) =>
-                fieldObject.fieldType === FormField.Input && Boolean(this.props.formConfig[fieldName].compareWith)
-            )
+                fieldObject.fieldType === FormField.Input && Boolean((this.props.formConfig[fieldName] as FormInputConfigProps).compareWith)
+            ) as Array<[string, FormInputState]>
 
         return inputsToCompare.length
             ? inputsToCompare
                 .map(([ fieldName, fieldObject ]) => {
-                    const fieldToCompare = (this.props.formConfig[fieldName].compareWith as InputCompareWith).fieldName
+                    const fieldToCompare = ((this.props.formConfig[fieldName] as FormInputConfigProps).compareWith as InputCompareWith).fieldName
 
-                    return fieldObject.value === this.state.form[fieldToCompare].value
+                    return fieldObject.value === (this.state.form[fieldToCompare] as FormInputState).value
                 })
                 .every(Boolean)
             : true
@@ -84,30 +105,42 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
             .toPairs(this.state.form)
             .filter(([, fieldObject]) => fieldObject.isRequired)
             .map(([fieldName, fieldObject]) => {
-                const isValid = this.validateField(fieldName, fieldObject.value as string)
-                const { compareWith } = this.props.formConfig[fieldName]
+                if (fieldObject.fieldType === FormField.Input) {
+                    const fieldProperties = fieldObject as FormInputState
+                    const isValid = this.validateField(fieldName, fieldProperties.value as string)
+                    const { compareWith } = this.props.formConfig[fieldName] as FormInputConfigProps
 
-                const hasError = R.cond([
-                    [
-                        () => !isValid,
-                        () => this.getFieldErrorMessage(fieldName, fieldObject.value as string)
-                    ],
-                    [
-                        () => Boolean(compareWith),
-                        () => fieldObject.value !== this.state.form[compareWith!.fieldName].value
-                            ? compareWith!.errorMessage
-                            : undefined
-                    ],
-                    [
-                        R.T,
-                        R.always(undefined)
-                    ]
-                ])()
+                    const hasError = R.cond([
+                        [
+                            () => !isValid,
+                            () => this.getFieldErrorMessage(fieldName, fieldProperties.value as string)
+                        ],
+                        [
+                            () => Boolean(compareWith),
+                            () => fieldProperties.value !== (this.state.form[compareWith!.fieldName] as FormInputConfigProps).value
+                                ? compareWith!.errorMessage
+                                : undefined
+                        ],
+                        [
+                            R.T,
+                            R.always(undefined)
+                        ]
+                    ])()
+
+                    return [fieldName, {
+                        ...fieldObject,
+                        isValid,
+                        hasError
+                    }]
+                }
+
+                // CustomPicker
+
+                const hasError = this.getCustomPickerErrorMessage(fieldName)
 
                 return [fieldName, {
                     ...fieldObject,
-                    isValid,
-                    hasError
+                    hasError,
                 }]
             })
             .reduce((acc, [fieldName, fieldObject]) => ({
@@ -123,6 +156,42 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
         }, this.handleFormError)
     }
 
+    getCustomPickerErrorMessage(fieldName: string) {
+        const pickerConfig = this.props.formConfig[fieldName] as FormCustomPickerConfigProps
+
+        if (!pickerConfig.validationRules) {
+            return
+        }
+
+        const pickerState = this.state.form[fieldName] as FormCustomPickerState
+        const selectedOptions = pickerState.options.filter(option => option.isSelected)
+
+        const [errorMessage] = pickerConfig.validationRules
+            .map(({ validationFunction, errorMessage }) => {
+                const isValid = validationFunction(selectedOptions)
+
+                return !isValid ? errorMessage : undefined
+            })
+            .filter(Boolean)
+
+        return errorMessage
+    }
+
+    validateCustomPicker(fieldName: string) {
+        const pickerConfig = this.props.formConfig[fieldName] as FormCustomPickerConfigProps
+
+        if (!pickerConfig.validationRules) {
+            return true
+        }
+
+        const pickerState = this.state.form[fieldName] as FormCustomPickerState
+        const selectedOptions = pickerState.options.filter(option => option.isSelected)
+
+        return pickerConfig.validationRules
+            .map(({ validationFunction }) => validationFunction(selectedOptions))
+            .every(Boolean)
+    }
+
     submitForm() {
         Keyboard.dismiss()
 
@@ -132,22 +201,22 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
 
         const form = R.toPairs(this.state.form)
             .reduce((acc, [ fieldName, fieldObject ]) => {
-                const isInput = fieldObject.fieldType === FormField.Input
-
-                if (isInput) {
+                if (fieldObject.fieldType === FormField.Input) {
+                    const inputStateProperties = fieldObject as FormInputState
                     const submitParser = (this.props.formConfig[fieldName] as FormInputConfigProps).submitParser
 
                     return {
                         ...acc,
                         [fieldName] : submitParser
                             ? submitParser((fieldObject as FormInputState).value)
-                            : fieldObject.value
+                            : inputStateProperties.value
                     }
                 }
 
+                // CustomPicker
                 return {
                     ...acc,
-                    [fieldName] : fieldObject.value
+                    [fieldName] : (fieldObject as FormCustomPickerState).options.filter(option => option.isSelected)
                 }
             }, {}) as T
 
@@ -222,7 +291,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
     }
 
     onInputBlur(fieldName: string) {
-        const currentValue = (this.state.form[fieldName].value as string).trim()
+        const currentValue = ((this.state.form[fieldName] as FormInputState).value).trim()
         const isValid = this.validateField(fieldName, currentValue)
         const errorMessage = !isValid ? this.getFieldErrorMessage(fieldName, currentValue) : undefined
 
@@ -235,6 +304,35 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                     hasError: errorMessage,
                     value: currentValue
                 } as FormInputState
+            }
+        })
+    }
+
+    handlePickerOptionChange(fieldName: string, option: CustomPickerOption) {
+        const pickerConfig = this.props.formConfig[fieldName] as FormCustomPickerConfigProps
+        const isSingleValueMode = pickerConfig.pickerMode === CustomPickerMode.Single
+        const currentPickerState = this.state.form[fieldName] as FormCustomPickerState
+
+        return this.setState({
+            form: {
+                ...this.state.form,
+                [fieldName]: {
+                    ...currentPickerState,
+                    options: currentPickerState.options.map(currentStateOption => {
+                        if (isSingleValueMode) {
+                            return currentStateOption.value === option.value
+                                ? option
+                                : {
+                                    ...currentStateOption,
+                                    isSelected: false
+                                }
+                        }
+
+                        return currentStateOption.value === option.value
+                            ? option
+                            : currentStateOption
+                    })
+                }
             }
         })
     }
@@ -255,15 +353,27 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
 
             return React.cloneElement<InputProps>(reactElementChild, {
                 ...reactElementChild.props,
-                withError: (this.state.form[fieldName] as FormInputState).hasError,
+                withError: this.state.form[fieldName].hasError,
                 inputProps: {
                     editable: !Boolean(this.props.isLoading),
                     ...configProps.inputProps,
                     style: StyleSheet.flatten([formConfigStyles, customInputStyles]),
-                    value: this.state.form[fieldName].value,
+                    value: (this.state.form[fieldName] as FormInputState).value,
                     onChangeText: value => this.onTextChange(value, fieldName),
                     onBlur: () => this.onInputBlur(fieldName)
                 }
+            })
+        }
+
+        if (reactElementChild.type === CustomPicker) {
+            const fieldName = reactElementChild.props.formFieldName
+            const pickerState = (this.state.form[fieldName] as FormCustomPickerState)
+
+            return React.cloneElement<CustomPickerProps>(reactElementChild, {
+                ...reactElementChild.props,
+                withError: this.state.form[fieldName].hasError,
+                options: pickerState.options,
+                onOptionChange: option => this.handlePickerOptionChange(fieldName, option)
             })
         }
 
