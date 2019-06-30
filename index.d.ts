@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react'
 import { TextInputProps, TextStyle, ViewStyle } from 'react-native'
-import { onOptionPress } from './src/types';
 
 type InputProps = {
     formFieldName?: string,
@@ -42,7 +41,6 @@ interface FormInputConfigProps extends FormFieldBase {
     submitParser?(value: string): string
 }
 
-// todo later there will be more types assigned to FieldConfig
 type FieldConfig = FormInputConfigProps
 
 export type FormConfig = {
@@ -55,7 +53,6 @@ interface FormInputState extends FormFieldBase {
     value: string,
 }
 
-// todo later there will be more types assigned to FieldState
 type FieldState = FormInputState
 
 type FormBuilderState = {
@@ -72,19 +69,9 @@ type FormBuilderProps<T> = {
 }
 
 export enum FormField {
-    Input = 0
+    Input = 0,
+    CustomPicker = 1
 }
-
-// tslint:disable max-classes-per-file
-
-export const Input: React.FunctionComponent<InputProps> = () => {}
-export const Label: React.FunctionComponent<LabelProps> = () => {}
-export class Form<T = {}> extends React.Component<FormBuilderProps<T>, FormBuilderState> {
-    submitForm(): T
-    setCustomFieldError(fieldName: string, errorMessage: string): void
-}
-
-// Custom Placeholder
 
 export type CustomPickerOption = {
     value: string | number,
@@ -94,18 +81,27 @@ export type CustomPickerOption = {
 
 export type RenderPlaceholderComponent = (selectedOptions: Array<CustomPickerOption>, isPickerVisible: boolean) => ReactNode
 
-export type CustomPickerState = {
+type CustomPickerState = {
     isPickerVisible: boolean,
 }
+
+export type OnCustomPickerOptionPress = (option: CustomPickerOption) => void
 
 export type CustomPickerProps = {
     withError?: string,
     customErrorStyle?: TextStyle,
-    onOptionChange?: onOptionPress,
+    onOptionChange?: OnCustomPickerOptionPress,
     isPickerAlwaysVisible?: boolean,
     options?: Array<CustomPickerOption>,
     renderPlaceholderComponent?: RenderPlaceholderComponent,
-    renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: onOptionPress): ReactNode,
+    renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: OnCustomPickerOptionPress): ReactNode,
 }
 
+// tslint:disable max-classes-per-file
+export const Input: React.FunctionComponent<InputProps> = () => {}
+export const Label: React.FunctionComponent<LabelProps> = () => {}
 export class CustomPicker extends React.Component<CustomPickerProps, CustomPickerState> {}
+export class Form<T = {}> extends React.Component<FormBuilderProps<T>, FormBuilderState> {
+    submitForm(): T
+    setCustomFieldError(fieldName: string, errorMessage: string): void
+}

@@ -8,7 +8,7 @@ export type CustomPickerOption = {
 }
 
 export type RenderPlaceholderComponent = (selectedOptions: Array<CustomPickerOption>, isPickerVisible: boolean) => ReactNode
-export type onOptionPress = (option: CustomPickerOption) => void
+export type OnCustomPickerOptionPress = (option: CustomPickerOption) => void
 
 export type CustomPickerState = {
     isPickerVisible: boolean,
@@ -18,9 +18,9 @@ export type CustomPickerProps = {
     withError?: string,
     formFieldName?: string,
     customErrorStyle?: TextStyle,
-    onOptionChange?: onOptionPress,
+    onOptionChange?: OnCustomPickerOptionPress,
     isPickerAlwaysVisible?: boolean,
     options?: Array<CustomPickerOption>,
     renderPlaceholderComponent?: RenderPlaceholderComponent,
-    renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: onOptionPress): ReactNode,
+    renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: OnCustomPickerOptionPress): ReactNode,
 }

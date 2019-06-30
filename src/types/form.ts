@@ -15,7 +15,8 @@ export type FormFieldValidationRule = {
 }
 
 export enum FormField {
-    Input = 0
+    Input = 0,
+    CustomPicker = 1
 }
 
 export type InputCompareWith = {
