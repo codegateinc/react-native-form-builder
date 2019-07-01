@@ -216,7 +216,9 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                 // CustomPicker
                 return {
                     ...acc,
-                    [fieldName] : (fieldObject as FormCustomPickerState).options.filter(option => option.isSelected)
+                    [fieldName] : (fieldObject as FormCustomPickerState).options
+                        .filter(option => option.isSelected)
+                        .map(option => option.value)
                 }
             }, {}) as T
 
@@ -318,6 +320,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                 ...this.state.form,
                 [fieldName]: {
                     ...currentPickerState,
+                    hasError: undefined,
                     options: currentPickerState.options.map(currentStateOption => {
                         if (isSingleValueMode) {
                             return currentStateOption.value === option.value
@@ -440,6 +443,6 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
 
 const styles: Styles = {
     container: {
-        flex: 1
+        width: '100%'
     }
 }

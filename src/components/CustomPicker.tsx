@@ -1,6 +1,4 @@
 import React, { Fragment } from 'react'
-import { View, TouchableOpacity } from 'react-native'
-import { Styles } from 'lib/types'
 import { CustomPickerOption, CustomPickerProps, CustomPickerState } from '../types'
 import { ErrorMessage } from './ErrorMessage'
 
@@ -16,13 +14,13 @@ export class CustomPicker extends React.Component<CustomPickerProps, CustomPicke
         this.setPickerVisibility = this.setPickerVisibility.bind(this)
     }
 
-    setPickerVisibility() {
+    setPickerVisibility(isVisible: boolean) {
         if (Boolean(this.props.isPickerAlwaysVisible)) {
             return
         }
 
         this.setState({
-            isPickerVisible: !this.state.isPickerVisible
+            isPickerVisible: isVisible
         })
     }
 
@@ -43,14 +41,9 @@ export class CustomPicker extends React.Component<CustomPickerProps, CustomPicke
         const selectedOptions = this.props.options.filter(option => Boolean(option.isSelected))
 
         return (
-            <TouchableOpacity
-                activeOpacity={1}
-                onPress={this.setPickerVisibility}
-            >
-                <Fragment>
-                    {this.props.renderPlaceholderComponent(selectedOptions, this.state.isPickerVisible)}
-                </Fragment>
-            </TouchableOpacity>
+            <Fragment>
+                {this.props.renderPlaceholderComponent(selectedOptions, this.state.isPickerVisible, this.setPickerVisibility)}
+            </Fragment>
         )
     }
 
@@ -61,7 +54,7 @@ export class CustomPicker extends React.Component<CustomPickerProps, CustomPicke
 
         return this.state.isPickerVisible ? (
             <Fragment>
-                {this.props.renderPickerComponent(this.props.options, this.onOptionPress)}
+                {this.props.renderPickerComponent(this.props.options, this.onOptionPress, this.setPickerVisibility)}
             </Fragment>
         ): null
     }
@@ -77,17 +70,11 @@ export class CustomPicker extends React.Component<CustomPickerProps, CustomPicke
 
     render() {
         return (
-            <View style={styles.container}>
+            <Fragment>
                 {this.renderPlaceholderComponent()}
                 {this.renderPickerComponent()}
                 {this.renderError()}
-            </View>
+            </Fragment>
         )
-    }
-}
-
-const styles: Styles = {
-    container: {
-        width: '100%'
     }
 }

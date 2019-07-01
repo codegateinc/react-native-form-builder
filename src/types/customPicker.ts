@@ -17,7 +17,8 @@ export type CustomPickerValidationRule = {
     validationFunction(selectedOptions: Array<CustomPickerOption>): boolean,
 }
 
-export type RenderPlaceholderComponent = (selectedOptions: Array<CustomPickerOption>, isPickerVisible: boolean) => ReactNode
+export type TogglePickerVisibilityState = (isVisible: boolean) => void
+export type RenderPlaceholderComponent = (selectedOptions: Array<CustomPickerOption>, isPickerVisible: boolean, togglePicker: TogglePickerVisibilityState) => ReactNode
 export type OnCustomPickerOptionPress = (option: CustomPickerOption) => void
 
 export type CustomPickerState = {
@@ -32,5 +33,5 @@ export type CustomPickerProps = {
     isPickerAlwaysVisible?: boolean,
     options?: Array<CustomPickerOption>,
     renderPlaceholderComponent?: RenderPlaceholderComponent,
-    renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: OnCustomPickerOptionPress): ReactNode,
+    renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: OnCustomPickerOptionPress, togglePicker: TogglePickerVisibilityState): ReactNode,
 }

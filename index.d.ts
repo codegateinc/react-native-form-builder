@@ -100,7 +100,8 @@ export type CustomPickerOption = {
     isSelected?: boolean
 }
 
-type RenderPlaceholderComponent = (selectedOptions: Array<CustomPickerOption>, isPickerVisible: boolean) => ReactNode
+export type TogglePickerVisibilityState = (isVisible: boolean) => void
+export type RenderPlaceholderComponent = (selectedOptions: Array<CustomPickerOption>, isPickerVisible: boolean, togglePicker: TogglePickerVisibilityState) => ReactNode
 
 type CustomPickerState = {
     isPickerVisible: boolean,
@@ -116,7 +117,7 @@ type CustomPickerProps = {
     isPickerAlwaysVisible?: boolean,
     options?: Array<CustomPickerOption>,
     renderPlaceholderComponent?: RenderPlaceholderComponent,
-    renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: OnCustomPickerOptionPress): ReactNode,
+    renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: OnCustomPickerOptionPress, togglePicker: TogglePickerVisibilityState): ReactNode,
 }
 
 // tslint:disable max-classes-per-file

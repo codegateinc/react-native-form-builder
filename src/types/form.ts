@@ -1,5 +1,5 @@
 import { TextInputProps, ViewStyle } from 'react-native'
-import { CustomPickerOption, CustomPickerMode, CustomPickerValidationRule } from '../types'
+import { CustomPickerOption, CustomPickerMode, CustomPickerValidationRule } from './customPicker'
 
 type FormFieldBase = {
     isRequired: boolean,
