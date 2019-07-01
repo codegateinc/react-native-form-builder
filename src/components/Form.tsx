@@ -443,6 +443,6 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
 
 const styles: Styles = {
     container: {
-        flex: 1
+        width: '100%'
     }
 }
