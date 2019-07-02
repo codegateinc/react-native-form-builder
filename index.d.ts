@@ -32,7 +32,7 @@ type InputCompareWith = {
     errorMessage: string
 }
 
-interface FormInputConfigProps extends FormFieldBase {
+export interface FormInputConfigProps extends FormFieldBase {
     value: string,
     inputProps?: TextInputProps,
     validationRules?: Array<FormFieldValidationRule>,
@@ -57,7 +57,7 @@ export interface FormCustomPickerConfigProps extends FormFieldBase {
     validationRules?: Array<CustomPickerValidationRule>
 }
 
-type FieldConfig = FormInputConfigProps | FormCustomPickerConfigProps
+export type FieldConfig = FormInputConfigProps | FormCustomPickerConfigProps
 
 export type FormConfig = {
     [key: string]: FieldConfig
