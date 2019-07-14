@@ -103,7 +103,10 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
     showErrorsOnSubmit() {
         const checkedFormFields = R
             .toPairs(this.state.form)
-            .filter(([, fieldObject]) => fieldObject.isRequired)
+            .filter(([fieldName, fieldObject]) =>
+                fieldObject.isRequired ||
+                (fieldObject.fieldType === FormField.Input && Boolean((fieldObject as FormInputState).value) && Boolean(this.props.formConfig[fieldName].validationRules))
+            )
             .map(([fieldName, fieldObject]) => {
                 if (fieldObject.fieldType === FormField.Input) {
                     const fieldProperties = fieldObject as FormInputState
