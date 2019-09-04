@@ -127,4 +127,5 @@ export class CustomPicker extends React.Component<CustomPickerProps, CustomPicke
 export class Form<T = {}> extends React.Component<FormBuilderProps<T>, FormBuilderState> {
     submitForm(): T
     setCustomFieldError(fieldName: string, errorMessage: string): void
+    hasChanges(): boolean
 }

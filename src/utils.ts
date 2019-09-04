@@ -19,7 +19,8 @@ export const prepareFormInitialState = (formConfig: FormConfig) => {
                     isValid: Boolean(inputConfig.value),
                     isRequired: config.isRequired,
                     value: isValidInputValue ? inputConfig.value : '',
-                    fieldType: config.fieldType
+                    fieldType: config.fieldType,
+                    isPristine: true
                 }]
             }
 
@@ -29,7 +30,8 @@ export const prepareFormInitialState = (formConfig: FormConfig) => {
             return [fieldName, {
                 fieldType: customPickerConfig.fieldType,
                 isRequired: customPickerConfig.isRequired,
-                options: customPickerConfig.options
+                options: customPickerConfig.options,
+                isPristine: true
             }]
         }) as Array<[string, FieldState]>
 
