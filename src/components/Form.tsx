@@ -328,6 +328,8 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
         const isSingleValueMode = pickerConfig.pickerMode === CustomPickerMode.Single
         const currentPickerState = this.state.form[fieldName] as FormCustomPickerState
 
+        // todo handle isPristine in customPicker
+
         return this.setState({
             form: {
                 ...this.state.form,
