@@ -79,6 +79,11 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
             : true
     }
 
+    hasChanges() {
+        return R.toPairs(this.state.form)
+            .some(([, fieldObject]) => !fieldObject.isPristine)
+    }
+
     handleFormError() {
         if (this.props.onFormError) {
             const errors = getFormErrors(this.state.form)
@@ -282,6 +287,8 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
             ? this.getFieldErrorMessage(formFieldName, newValue)
             : undefined
 
+        const isPristine = !(value !== (this.props.formConfig[formFieldName] as FormInputConfigProps).value)
+
         this.setState({
             form: {
                 ...this.state.form,
@@ -289,7 +296,8 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                     ...this.state.form[formFieldName],
                     value: newValue,
                     isValid,
-                    hasError: errorMessage
+                    hasError: errorMessage,
+                    isPristine
                 }
             }
         })
@@ -299,6 +307,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
         const currentValue = ((this.state.form[fieldName] as FormInputState).value).trim()
         const isValid = this.validateField(fieldName, currentValue)
         const errorMessage = !isValid ? this.getFieldErrorMessage(fieldName, currentValue) : undefined
+        const isPristine = !(currentValue !== (this.props.formConfig[fieldName] as FormInputConfigProps).value)
 
         this.setState({
             form: {
@@ -307,7 +316,8 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                     ...this.state.form[fieldName],
                     isValid,
                     hasError: errorMessage,
-                    value: currentValue
+                    value: currentValue,
+                    isPristine
                 } as FormInputState
             }
         })
@@ -324,6 +334,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                 [fieldName]: {
                     ...currentPickerState,
                     hasError: undefined,
+                    isPristine: false,
                     options: currentPickerState.options.map(currentStateOption => {
                         if (isSingleValueMode) {
                             return currentStateOption.value === option.value

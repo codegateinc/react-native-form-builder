@@ -50,11 +50,13 @@ export interface FormInputState extends FormFieldBase {
     isValid: boolean,
     hasError?: string,
     value: string,
+    isPristine: boolean
 }
 
 export interface FormCustomPickerState extends FormFieldBase {
     options: Array<CustomPickerOption>,
-    hasError?: string
+    hasError?: string,
+    isPristine: boolean,
 }
 
 // todo later there will be more types assigned to FieldState
