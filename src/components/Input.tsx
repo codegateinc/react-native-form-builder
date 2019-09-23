@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TextInput, Text, TextInputProps, ViewStyle, TextStyle } from 'react-native'
+import { View, TextInput, TextInputProps, ViewStyle, TextStyle } from 'react-native'
 import { Styles } from 'lib/types'
 import { colors } from 'lib/common'
 import { InputProps } from '../types'
