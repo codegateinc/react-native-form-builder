@@ -15,9 +15,15 @@ export type FormFieldValidationRule = {
     validationFunction(text: string): boolean,
 }
 
+export type FormCheckboxValidationRule = {
+    errorMessage: string,
+    validationFunction(isSelected: boolean): boolean
+}
+
 export enum FormField {
     Input = 0,
-    CustomPicker = 1
+    CustomPicker = 1,
+    Checkbox = 2
 }
 
 export type InputCompareWith = {
@@ -34,13 +40,18 @@ export interface FormInputConfigProps extends FormFieldBase {
     submitParser?(value: string): string
 }
 
+export interface FormCheckboxConfigProps extends FormFieldBase {
+    value: boolean,
+    validationRule?: FormCheckboxValidationRule
+}
+
 export interface FormCustomPickerConfigProps extends FormFieldBase {
     options: Array<CustomPickerOption>,
     pickerMode: CustomPickerMode,
     validationRules?: Array<CustomPickerValidationRule>
 }
 
-export type FieldConfig = FormInputConfigProps | FormCustomPickerConfigProps
+export type FieldConfig = FormInputConfigProps | FormCustomPickerConfigProps | FormCheckboxConfigProps
 
 export type FormConfig = {
     [key: string]: FieldConfig
@@ -53,14 +64,19 @@ export interface FormInputState extends FormFieldBase {
     isPristine: boolean
 }
 
+export interface FormCheckboxState extends FormFieldBase {
+    hasError?: string,
+    value: boolean,
+    isPristine: boolean
+}
+
 export interface FormCustomPickerState extends FormFieldBase {
     options: Array<CustomPickerOption>,
     hasError?: string,
     isPristine: boolean,
 }
 
-// todo later there will be more types assigned to FieldState
-export type FieldState = FormInputState | FormCustomPickerState
+export type FieldState = FormInputState | FormCustomPickerState | FormCheckboxState
 
 export type FormBuilderState = {
     [key: string]: FieldState

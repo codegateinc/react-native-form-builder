@@ -22,6 +22,11 @@ export type FormFieldValidationRule = {
     validationFunction(text: string): boolean,
 }
 
+export type FormCheckboxValidationRule = {
+    errorMessage: string,
+    validationFunction(isSelected: boolean): boolean
+}
+
 type FormFieldBase = {
     isRequired: boolean,
     fieldType: FormField
@@ -57,7 +62,13 @@ export interface FormCustomPickerConfigProps extends FormFieldBase {
     validationRules?: Array<CustomPickerValidationRule>
 }
 
-export type FieldConfig = FormInputConfigProps | FormCustomPickerConfigProps
+
+export interface FormCheckboxConfigProps extends FormFieldBase {
+    value: boolean,
+    validationRule?: FormCheckboxValidationRule
+}
+
+export type FieldConfig = FormInputConfigProps | FormCustomPickerConfigProps | FormCheckboxConfigProps
 
 export type FormConfig = {
     [key: string]: FieldConfig
@@ -74,7 +85,13 @@ interface FormCustomPickerState extends FormFieldBase {
     hasError?: string
 }
 
-type FieldState = FormInputState | FormCustomPickerState
+export interface FormCheckboxState extends FormFieldBase {
+    hasError?: string,
+    value: boolean,
+    isPristine: boolean
+}
+
+type FieldState = FormInputState | FormCustomPickerState | FormCheckboxState
 
 type FormBuilderState = {
     [key: string]: FieldState
@@ -120,9 +137,24 @@ type CustomPickerProps = {
     renderPickerComponent(options: Array<CustomPickerOption>, onOptionPress: OnCustomPickerOptionPress, togglePicker: TogglePickerVisibilityState): ReactNode,
 }
 
+// checkbox
+
+export type RenderCheckboxComponent = (isSelected: boolean) => React.ReactNode
+export type OnCheckboxChange = () => void
+
+export type CheckboxProps = {
+    isSelected?: boolean,
+    withError?: string,
+    formFieldName?: string,
+    onChange?: OnCheckboxChange,
+    renderComponent?: RenderCheckboxComponent,
+    errorMessageStyles?: ViewStyle
+}
+
 // tslint:disable max-classes-per-file
 export const Input: React.FunctionComponent<InputProps> = () => {}
 export const Label: React.FunctionComponent<LabelProps> = () => {}
+export const Checkbox: React.FunctionComponent<CheckboxProps> = () => {}
 export class CustomPicker extends React.Component<CustomPickerProps, CustomPickerState> {}
 export class Form<T = {}> extends React.Component<FormBuilderProps<T>, FormBuilderState> {
     submitForm(): T

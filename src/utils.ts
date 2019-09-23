@@ -1,7 +1,7 @@
 import { R } from 'lib/utils'
 import {
     FieldState,
-    FormBuilderState,
+    FormBuilderState, FormCheckboxConfigProps,
     FormConfig,
     FormCustomPickerConfigProps,
     FormField,
@@ -21,6 +21,17 @@ export const prepareFormInitialState = (formConfig: FormConfig) => {
                     value: isValidInputValue ? inputConfig.value : '',
                     fieldType: config.fieldType,
                     isPristine: true
+                }]
+            }
+
+            if (config.fieldType === FormField.Checkbox) {
+                const checkboxConfig = config as FormCheckboxConfigProps
+
+                return [fieldName, {
+                    isRequired: config.isRequired,
+                    value: checkboxConfig.value,
+                    fieldType: checkboxConfig.fieldType,
+                    isPristine: true,
                 }]
             }
 
