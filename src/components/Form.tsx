@@ -4,12 +4,15 @@ import { R } from 'lib/utils'
 import { Styles } from 'lib/types'
 import { getFormErrors, prepareFormInitialState } from '../utils'
 import {
+    CheckboxProps,
     CustomPickerMode,
     CustomPickerOption,
     CustomPickerProps,
     FieldState,
     FormBuilderProps,
     FormBuilderState,
+    FormCheckboxConfigProps,
+    FormCheckboxState,
     FormCustomPickerConfigProps,
     FormCustomPickerState,
     FormField,
@@ -20,6 +23,7 @@ import {
 } from '../types'
 import { Input } from './Input'
 import { CustomPicker } from './CustomPicker'
+import { Checkbox } from './Checkbox'
 
 type FormProps<T> = FormBuilderProps<T>
 
@@ -55,9 +59,15 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
             .map(([fieldName]) => this.validateCustomPicker(fieldName))
             .every(Boolean)
 
+        const areCheckboxesValid = R.toPairs(this.state.form)
+            .filter(([, fieldObject ]) => fieldObject.fieldType === FormField.Checkbox && fieldObject.isRequired)
+            .map(([fieldName]) => this.validateCheckbox(fieldName))
+            .every(Boolean)
+
         return R.all(
             areInputsValid,
             areCustomPickersValid,
+            areCheckboxesValid,
             !this.props.isLoading
         )
     }
@@ -110,7 +120,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
             .toPairs(this.state.form)
             .filter(([fieldName, fieldObject]) =>
                 fieldObject.isRequired ||
-                (fieldObject.fieldType === FormField.Input && Boolean((fieldObject as FormInputState).value) && Boolean(this.props.formConfig[fieldName].validationRules))
+                (fieldObject.fieldType === FormField.Input && Boolean((fieldObject as FormInputState).value) && Boolean((this.props.formConfig[fieldName] as FormInputConfigProps).validationRules))
             )
             .map(([fieldName, fieldObject]) => {
                 if (fieldObject.fieldType === FormField.Input) {
@@ -142,13 +152,18 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                     }]
                 }
 
-                // CustomPicker
+                if (fieldObject.fieldType === FormField.Checkbox) {
+                    return [fieldName, {
+                        ...fieldObject,
+                        hasError: this.getCheckboxErrorMessage(fieldName, (fieldObject as FormCheckboxState).value)
+                    }]
+                }
 
-                const hasError = this.getCustomPickerErrorMessage(fieldName)
+                // CustomPicker
 
                 return [fieldName, {
                     ...fieldObject,
-                    hasError,
+                    hasError: this.getCustomPickerErrorMessage(fieldName),
                 }]
             })
             .reduce((acc, [fieldName, fieldObject]) => ({
@@ -185,6 +200,18 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
         return errorMessage
     }
 
+    getCheckboxErrorMessage(fieldName: string, value: boolean) {
+        const checkboxConfig = (this.props.formConfig[fieldName] as FormCheckboxConfigProps)
+
+        if (!checkboxConfig.validationRule) {
+            return undefined
+        }
+
+        return !checkboxConfig.validationRule.validationFunction(value)
+            ? checkboxConfig.validationRule.errorMessage
+            : undefined
+    }
+
     validateCustomPicker(fieldName: string) {
         const pickerConfig = this.props.formConfig[fieldName] as FormCustomPickerConfigProps
 
@@ -198,6 +225,18 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
         return pickerConfig.validationRules
             .map(({ validationFunction }) => validationFunction(selectedOptions))
             .every(Boolean)
+    }
+
+    validateCheckbox(fieldName: string) {
+        const checkboxConfig = (this.props.formConfig[fieldName] as FormCheckboxConfigProps)
+
+        if (!checkboxConfig.validationRule) {
+            return true
+        }
+
+        const checkboxValue = (this.state.form[fieldName] as FormCheckboxState).value
+
+        return checkboxConfig.validationRule.validationFunction(checkboxValue)
     }
 
     submitForm() {
@@ -218,6 +257,13 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                         [fieldName] : submitParser
                             ? submitParser((fieldObject as FormInputState).value)
                             : inputStateProperties.value
+                    }
+                }
+
+                if (fieldObject.fieldType === FormField.Checkbox) {
+                    return {
+                        ...acc,
+                        [fieldName]: (fieldObject as FormCheckboxState).value
                     }
                 }
 
@@ -356,8 +402,24 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
         })
     }
 
+    handleCheckboxChange(fieldName: string) {
+        const newValue = !(this.state.form[fieldName] as FormCheckboxState).value
+
+        this.setState({
+            form: {
+                ...this.state.form,
+                [fieldName]: {
+                    ...this.state.form[fieldName],
+                    value: newValue,
+                    isPristine: false,
+                    hasError: this.getCheckboxErrorMessage(fieldName, newValue)
+                }
+            }
+        })
+    }
+
     renderChild(child: React.ReactNode) {
-        if (R.is(String, child) || R.is(Number, child)) {
+        if (R.is(String, child) || R.is(Number, child) || child === null) {
             return child
         }
 
@@ -393,6 +455,17 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                 withError: this.state.form[fieldName].hasError,
                 options: pickerState.options,
                 onOptionChange: option => this.handlePickerOptionChange(fieldName, option)
+            })
+        }
+
+        if (reactElementChild.type === Checkbox) {
+            const fieldName = reactElementChild.props.formFieldName
+
+            return React.cloneElement<CheckboxProps>(reactElementChild, {
+                ...reactElementChild.props,
+                withError: this.state.form[fieldName].hasError,
+                isSelected: (this.state.form[fieldName] as FormCheckboxState).value,
+                onChange: () => this.handleCheckboxChange(fieldName)
             })
         }
 
