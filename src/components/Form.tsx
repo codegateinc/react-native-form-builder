@@ -411,7 +411,8 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                 [fieldName]: {
                     ...this.state.form[fieldName],
                     value: !(this.state.form[fieldName] as FormCheckboxState).value,
-                    isPristine: false
+                    isPristine: false,
+                    hasError: this.getCheckboxErrorMessage(fieldName)
                 }
             }
         })
