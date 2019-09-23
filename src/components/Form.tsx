@@ -411,7 +411,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
     }
 
     renderChild(child: React.ReactNode) {
-        if (R.is(String, child) || R.is(Number, child)) {
+        if (R.is(String, child) || R.is(Number, child) || child === null) {
             return child
         }
 

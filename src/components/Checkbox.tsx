@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { TextStyle, TouchableWithoutFeedback } from 'react-native'
 import { CheckboxProps } from '../types'
 import { ErrorMessage } from './ErrorMessage'
@@ -18,8 +18,10 @@ export const Checkbox: React.FunctionComponent<CheckboxProps> = ({
     onChange
 }) => renderComponent ? (
     <TouchableWithoutFeedback onPress={onChange}>
-        {renderComponent(Boolean(isSelected))}
-        {renderErrorText(withError, errorMessageStyles)}
+        <Fragment>
+            {renderComponent(Boolean(isSelected))}
+            {renderErrorText(withError, errorMessageStyles)}
+        </Fragment>
     </TouchableWithoutFeedback>
 ) : null
 
