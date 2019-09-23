@@ -155,7 +155,7 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                 if (fieldObject.fieldType === FormField.Checkbox) {
                     return [fieldName, {
                         ...fieldObject,
-                        hasError: this.getCheckboxErrorMessage(fieldName)
+                        hasError: this.getCheckboxErrorMessage(fieldName, (fieldObject as FormCheckboxState).value)
                     }]
                 }
 
@@ -200,16 +200,14 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
         return errorMessage
     }
 
-    getCheckboxErrorMessage(fieldName: string) {
+    getCheckboxErrorMessage(fieldName: string, value: boolean) {
         const checkboxConfig = (this.props.formConfig[fieldName] as FormCheckboxConfigProps)
 
         if (!checkboxConfig.validationRule) {
             return undefined
         }
 
-        const checkboxValue = (this.state.form[fieldName] as FormCheckboxState).value
-
-        return !checkboxConfig.validationRule.validationFunction(checkboxValue)
+        return !checkboxConfig.validationRule.validationFunction(value)
             ? checkboxConfig.validationRule.errorMessage
             : undefined
     }
@@ -405,14 +403,16 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
     }
 
     handleCheckboxChange(fieldName: string) {
+        const newValue = !(this.state.form[fieldName] as FormCheckboxState).value
+
         this.setState({
             form: {
                 ...this.state.form,
                 [fieldName]: {
                     ...this.state.form[fieldName],
-                    value: !(this.state.form[fieldName] as FormCheckboxState).value,
+                    value: newValue,
                     isPristine: false,
-                    hasError: this.getCheckboxErrorMessage(fieldName)
+                    hasError: this.getCheckboxErrorMessage(fieldName, newValue)
                 }
             }
         })
