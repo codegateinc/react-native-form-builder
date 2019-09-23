@@ -262,6 +262,13 @@ export class Form<T> extends React.Component<FormProps<T>, FormState> {
                     }
                 }
 
+                if (fieldObject.fieldType === FormField.Checkbox) {
+                    return {
+                        ...acc,
+                        [fieldName]: (fieldObject as FormCheckboxState).value
+                    }
+                }
+
                 // CustomPicker
                 return {
                     ...acc,
